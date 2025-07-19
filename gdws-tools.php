@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: GDWS Tools
- * Plugin URI: https://golddust.co/
+ * Plugin URI: https://yourwebsite.com/
  * Description: A comprehensive toolkit providing useful shortcodes and functionality for GDWS clients
  * Version: 1.0.0
  * Author: GDWS
- * Author URI: https://golddust.co/
+ * Author URI: https://yourwebsite.com/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: gdws-tools
@@ -30,6 +30,11 @@ class GDWS_Tools {
      * Instance of this class
      */
     private static $instance = null;
+    
+    /**
+     * CPT Module instance
+     */
+    private $cpt_module = null;
     
     /**
      * Get single instance of this class
@@ -80,6 +85,10 @@ class GDWS_Tools {
         // Load shortcodes module
         require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/shortcodes.php';
         new GDWS_Tools_Shortcodes();
+        
+        // Load custom post types module
+        require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/custom-post-types.php';
+        $this->cpt_module = new GDWS_Tools_Custom_Post_Types();
         
         // Future modules can be loaded here
         // require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/another-feature.php';
@@ -152,6 +161,36 @@ class GDWS_Tools {
                     <li><?php _e('Dynamic content:', 'gdws-tools'); ?> <code><?php _e('Best Products of', 'gdws-tools'); ?> [current_year]</code></li>
                     <li><?php _e('Last updated:', 'gdws-tools'); ?> <code><?php _e('Updated January', 'gdws-tools'); ?> [current_year]</code></li>
                 </ul>
+            </div>
+            
+            <div class="card">
+                <h2><?php _e('Custom Post Types', 'gdws-tools'); ?></h2>
+                <p><?php _e('Create and manage custom post types directly from the WordPress admin.', 'gdws-tools'); ?></p>
+                
+                <?php 
+                if ($this->cpt_module) {
+                    $post_types = $this->cpt_module->get_registered_post_types();
+                    $active_count = 0;
+                    foreach ($post_types as $cpt) {
+                        if (!empty($cpt['active'])) {
+                            $active_count++;
+                        }
+                    }
+                    ?>
+                    <p><strong><?php echo sprintf(_n('%d custom post type registered', '%d custom post types registered', count($post_types), 'gdws-tools'), count($post_types)); ?></strong> 
+                    <?php if ($active_count > 0) : ?>
+                        (<?php echo sprintf(_n('%d active', '%d active', $active_count, 'gdws-tools'), $active_count); ?>)
+                    <?php endif; ?>
+                    </p>
+                    
+                    <p>
+                        <a href="<?php echo admin_url('admin.php?page=gdws-custom-post-types'); ?>" class="button">
+                            <?php _e('Manage Custom Post Types', 'gdws-tools'); ?>
+                        </a>
+                    </p>
+                    <?php
+                }
+                ?>
             </div>
             
             <div class="card">
