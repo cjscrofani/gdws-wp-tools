@@ -1,14 +1,16 @@
 <?php
 /**
  * Plugin Name: GDWS Tools
- * Plugin URI: https://yourwebsite.com/
+ * Plugin URI: https://github.com/cjscrofani/gdws-wp-tools
  * Description: A comprehensive toolkit providing useful shortcodes and functionality for GDWS clients
  * Version: 1.0.0
  * Author: GDWS
- * Author URI: https://yourwebsite.com/
+ * Author URI: https://gdws.co/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: gdws-tools
+ * GitHub Plugin URI: https://github.com/cjscrofani/gdws-wp-tools
+ * Primary Branch: main
  */
 
 // Prevent direct access to the file
@@ -20,6 +22,7 @@ if (!defined('ABSPATH')) {
 define('GDWS_TOOLS_VERSION', '1.0.0');
 define('GDWS_TOOLS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GDWS_TOOLS_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('GDWS_TOOLS_PLUGIN_FILE', __FILE__);
 
 /**
  * Main GDWS Tools Class
@@ -35,6 +38,11 @@ class GDWS_Tools {
      * CPT Module instance
      */
     private $cpt_module = null;
+    
+    /**
+     * GitHub Updater instance
+     */
+    private $updater = null;
     
     /**
      * Get single instance of this class
@@ -90,6 +98,10 @@ class GDWS_Tools {
         require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/custom-post-types.php';
         $this->cpt_module = new GDWS_Tools_Custom_Post_Types();
         
+        // Load GitHub updater module
+        require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/github-updater.php';
+        $this->updater = new GDWS_Tools_GitHub_Updater(__FILE__);
+        
         // Future modules can be loaded here
         // require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/another-feature.php';
     }
@@ -107,6 +119,62 @@ class GDWS_Tools {
             'dashicons-admin-tools',
             80
         );
+        
+        // Add updates submenu
+        add_submenu_page(
+            'gdws-tools',
+            __('Updates', 'gdws-tools'),
+            __('Updates', 'gdws-tools'),
+            'manage_options',
+            'gdws-tools-updates',
+            array($this, 'updates_page')
+        );
+    }
+    
+    /**
+     * Updates page
+     */
+    public function updates_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php _e('GDWS Tools Updates', 'gdws-tools'); ?></h1>
+            
+            <div class="card">
+                <h2><?php _e('GitHub Updates', 'gdws-tools'); ?></h2>
+                <p><?php _e('This plugin can automatically update from GitHub releases.', 'gdws-tools'); ?></p>
+                
+                <p><strong><?php _e('Current Version:', 'gdws-tools'); ?></strong> <?php echo GDWS_TOOLS_VERSION; ?></p>
+                
+                <p><?php _e('Updates will appear in the standard WordPress updates page when a new version is available on GitHub.', 'gdws-tools'); ?></p>
+                
+                <form method="post" action="">
+                    <?php wp_nonce_field('gdws_check_updates', 'gdws_update_nonce'); ?>
+                    <p class="submit">
+                        <button type="submit" name="check_updates" class="button button-primary">
+                            <?php _e('Check for Updates Now', 'gdws-tools'); ?>
+                        </button>
+                    </p>
+                </form>
+                
+                <?php
+                if (isset($_POST['check_updates']) && wp_verify_nonce($_POST['gdws_update_nonce'], 'gdws_check_updates')) {
+                    if ($this->updater) {
+                        $this->updater->force_check();
+                        echo '<div class="notice notice-success"><p>' . __('Checking for updates... Please check the WordPress updates page.', 'gdws-tools') . '</p></div>';
+                    }
+                }
+                ?>
+                
+                <h3><?php _e('How to Release Updates', 'gdws-tools'); ?></h3>
+                <ol>
+                    <li><?php _e('Update the Version number in the plugin header', 'gdws-tools'); ?></li>
+                    <li><?php _e('Commit and push your changes to GitHub', 'gdws-tools'); ?></li>
+                    <li><?php _e('Create a new Release on GitHub with a tag like "v1.0.1"', 'gdws-tools'); ?></li>
+                    <li><?php _e('The plugin will automatically detect the new version', 'gdws-tools'); ?></li>
+                </ol>
+            </div>
+        </div>
+        <?php
     }
     
     /**
@@ -120,6 +188,7 @@ class GDWS_Tools {
             <div class="gdws-tools-welcome">
                 <h2><?php _e('Welcome to GDWS Tools', 'gdws-tools'); ?></h2>
                 <p><?php _e('This plugin provides various tools and shortcodes to enhance your WordPress site.', 'gdws-tools'); ?></p>
+                <p><small><?php echo sprintf(__('Version %s', 'gdws-tools'), GDWS_TOOLS_VERSION); ?></small></p>
             </div>
             
             <div class="card">
@@ -196,6 +265,11 @@ class GDWS_Tools {
             <div class="card">
                 <h2><?php _e('More Features Coming Soon', 'gdws-tools'); ?></h2>
                 <p><?php _e('We are continuously adding new tools and features to help improve your website.', 'gdws-tools'); ?></p>
+                <p>
+                    <a href="<?php echo admin_url('admin.php?page=gdws-tools-updates'); ?>" class="button">
+                        <?php _e('Check for Updates', 'gdws-tools'); ?>
+                    </a>
+                </p>
             </div>
             
             <style>

@@ -1,0 +1,78 @@
+# WordPress Plugin Development .gitignore
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor Files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Development Files
+node_modules/
+npm-debug.log
+yarn-error.log
+.sass-cache/
+*.css.map
+*.js.map
+
+# Build Files
+/build/
+/dist/
+/vendor/
+composer.lock
+package-lock.json
+yarn.lock
+
+# Testing
+/tests/coverage/
+phpunit.xml
+.phpunit.result.cache
+
+# Environment Files
+.env
+.env.*
+!.env.example
+
+# WordPress Files (if developing inside WP)
+/wordpress/
+/wp-content/uploads/
+/wp-content/upgrade/
+/wp-content/backup-db/
+/wp-content/cache/
+/wp-content/backups/
+
+# Plugin Release Files
+*.zip
+*.tar.gz
+
+# Logs
+*.log
+error_log
+access_log
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*.backup
+*_old
+*_backup
+
+# Documentation Build
+/docs/_build/
+/docs/.doctrees/
+
+# Local Development
+/local-config.php
+/.htaccess
+
+# Keep these
+!.gitignore
+!.gitkeep
