@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: GDWS Tools
- * Plugin URI: https://yourwebsite.com/
+ * Plugin URI: https://golddust.co/
  * Description: A comprehensive toolkit providing useful shortcodes and functionality for GDWS clients
  * Version: 1.0.0
  * Author: GDWS
- * Author URI: https://yourwebsite.com/
+ * Author URI: https://golddust.co/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: gdws-tools
@@ -215,59 +215,3 @@ class GDWS_Tools {
 
 // Initialize the plugin
 GDWS_Tools::get_instance();
-
-/**
- * Shortcodes Module for GDWS Tools
- * 
- * This should be in a separate file: modules/shortcodes.php
- * For this example, it's included here
- */
-class GDWS_Tools_Shortcodes {
-    
-    /**
-     * Constructor
-     */
-    public function __construct() {
-        $this->register_shortcodes();
-    }
-    
-    /**
-     * Register all shortcodes
-     */
-    private function register_shortcodes() {
-        add_shortcode('current_year', array($this, 'current_year_shortcode'));
-        // Add more shortcodes here as needed
-        // add_shortcode('gdws_another_shortcode', array($this, 'another_shortcode'));
-    }
-    
-    /**
-     * Current Year Shortcode Handler
-     */
-    public function current_year_shortcode($atts) {
-        // Parse shortcode attributes
-        $atts = shortcode_atts(array(
-            'format' => 'Y',
-            'timezone' => null
-        ), $atts, 'current_year');
-        
-        // Set timezone if specified
-        if ($atts['timezone']) {
-            $original_timezone = date_default_timezone_get();
-            try {
-                date_default_timezone_set($atts['timezone']);
-                $output = date($atts['format']);
-                date_default_timezone_set($original_timezone);
-            } catch (Exception $e) {
-                // If invalid timezone, use default
-                $output = wp_date($atts['format']);
-            }
-        } else {
-            // Use WordPress timezone setting
-            $output = wp_date($atts['format']);
-        }
-        
-        return esc_html($output);
-    }
-    
-    // Add more shortcode methods here as needed
-}
