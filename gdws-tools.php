@@ -3,7 +3,7 @@
  * Plugin Name: GDWS Tools
  * Plugin URI: https://github.com/cjscrofani/gdws-wp-tools
  * Description: A comprehensive toolkit providing useful shortcodes and functionality for GDWS clients
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: GDWS
  * Author URI: https://gdws.co/
  * License: GPL v2 or later
@@ -38,6 +38,11 @@ class GDWS_Tools {
      * CPT Module instance
      */
     private $cpt_module = null;
+    
+    /**
+     * Image Compression Module instance
+     */
+    private $image_compression_module = null;
     
     /**
      * GitHub Updater instance
@@ -97,6 +102,10 @@ class GDWS_Tools {
         // Load custom post types module
         require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/custom-post-types.php';
         $this->cpt_module = new GDWS_Tools_Custom_Post_Types();
+        
+        // Load image compression module
+        require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/image-compression.php';
+        $this->image_compression_module = new GDWS_Tools_Image_Compression();
         
         // Load GitHub updater module
         require_once GDWS_TOOLS_PLUGIN_DIR . 'modules/github-updater.php';
@@ -260,6 +269,27 @@ class GDWS_Tools {
                     <?php
                 }
                 ?>
+            </div>
+            
+            <div class="card">
+                <h2><?php _e('Image Compression', 'gdws-tools'); ?></h2>
+                <p><?php _e('Optimize your media library by compressing images without losing quality.', 'gdws-tools'); ?></p>
+                
+                <h4><?php _e('Features:', 'gdws-tools'); ?></h4>
+                <ul>
+                    <li><?php _e('Bulk compress all images in your media library', 'gdws-tools'); ?></li>
+                    <li><?php _e('Support for JPEG, PNG, and WebP formats', 'gdws-tools'); ?></li>
+                    <li><?php _e('Automatic backup of original images', 'gdws-tools'); ?></li>
+                    <li><?php _e('Configurable compression quality settings', 'gdws-tools'); ?></li>
+                    <li><?php _e('Auto-compress new uploads (optional)', 'gdws-tools'); ?></li>
+                    <li><?php _e('Detailed statistics and space savings report', 'gdws-tools'); ?></li>
+                </ul>
+                
+                <p>
+                    <a href="<?php echo admin_url('admin.php?page=gdws-image-compression'); ?>" class="button button-primary">
+                        <?php _e('Manage Image Compression', 'gdws-tools'); ?>
+                    </a>
+                </p>
             </div>
             
             <div class="card">
